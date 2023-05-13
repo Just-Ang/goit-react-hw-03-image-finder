@@ -5,6 +5,7 @@ import React, { Component } from 'react';
 export class App extends Component {
   state = {
     photoName: null,
+    showModal: false,
   };
 
   componentDidUpdate(prevState) {
@@ -17,6 +18,11 @@ export class App extends Component {
     this.setState({ photoName: value });
   };
 
+  toggleModal = () => {
+    this.setState(({ showModal }) => ({
+      showModal: !showModal,
+    }));
+  };
   render() {
     return (
       <div
