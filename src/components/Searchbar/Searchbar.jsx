@@ -11,9 +11,9 @@ export class Searchbar extends Component {
 
     const form = e.currentTarget;
     const item = form.elements.text.value;
-    console.log(item);
+
     if (item.trim() === '') {
-      return alert('!!!!!');
+      return alert('Enter a search query');
     }
     this.props.onSubmit(item);
 

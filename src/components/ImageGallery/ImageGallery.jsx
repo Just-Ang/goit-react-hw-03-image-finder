@@ -8,11 +8,12 @@ import { Loader } from 'components/Loader/Loader';
 export class ImageGallery extends Component {
   state = {
     photo: [],
-    totalPage: 0,
     modal: null,
     showModal: false,
     status: 'idle',
     page: 1,
+    error: null,
+    totalPage: null,
   };
 
   handleModal = value => {
@@ -33,37 +34,36 @@ export class ImageGallery extends Component {
   };
 
   componentDidUpdate(prevProps, prevState) {
-    const prevSearchQuery = prevProps.photoName;
-    const nextSearchQuery = this.props.photoName;
-    const prevPage = prevState.page;
-    const currentPage = this.state.page;
-
-    const isNewSearchQuery = prevSearchQuery !== nextSearchQuery;
+    const isNewSearchQuery = prevProps.photoName !== this.props.photoName;
 
     if (isNewSearchQuery) {
       this.setState({ photo: [], page: 1 });
     }
 
-    if (isNewSearchQuery || prevPage !== currentPage) {
-      const requestPage = isNewSearchQuery ? 1 : currentPage;
+    if (isNewSearchQuery || prevState.page !== this.state.page) {
+      const requestPage = isNewSearchQuery ? 1 : this.state.page;
 
-      if (this.state.status === 'pending') return 
+      if (this.state.status === 'pending') return;
 
       this.setState({ status: 'pending' });
 
-   
-    
       fetch(
-        `https://pixabay.com/api/?key=34821995-346cc43bb02fb642b37e66530&q=${nextSearchQuery}&image_type=photo&orientation=horizontal&per_page=12&page=${requestPage}`
+        `https://pixabay.com/api/?key=34821995-346cc43bb02fb642b37e66530&q=${this.props.photoName}&image_type=photo&orientation=horizontal&per_page=12&page=${requestPage}`
       )
         .then(res => res.json())
-        .then(photo => this.setState({
-          photo: this.state.photo.concat(photo.hits),
-          totalPage: photo.totalPage,
-          status: 'resolved',
-        }))
-    
-  }}
+        .then(photo => {
+          // console.log(photo)
+          if (photo.hits.length === 0) {
+            return this.setState({ status: 'rejected' });
+          }
+          this.setState({
+            photo: this.state.photo.concat(photo.hits),
+            totalPage: Math.ceil(photo.totalHits / 12),
+            status: 'resolved',
+          });
+        });
+    }
+  }
 
   render() {
     const { photo, status } = this.state;
@@ -72,29 +72,36 @@ export class ImageGallery extends Component {
     }
 
     if (status === 'idle') {
-      return <h1
-      style={{
-        marginLeft: 'auto',
-        marginRight: 'auto',
-      }}>Enter a search query</h1>;
+      return (
+        <h1
+          style={{
+            marginLeft: 'auto',
+            marginRight: 'auto',
+          }}
+        >
+          Enter a search query
+        </h1>
+      );
+    }
+    if (status === 'rejected') {
+      return <h1>Not found</h1>;
     }
     return (
-
-      
-     <div>
-       <div className={css.ImageGallery}>
-        <ImageGalleryItem
-          photos={photo}
-          onClick={this.handleModal}
-          onClose={this.toggleModal}
-        />
-        {this.state.showModal && (
-          <Modal onClose={this.toggleModal} value={this.state.modal}></Modal>
+      <div>
+        <div className={css.ImageGallery}>
+          <ImageGalleryItem
+            photos={photo}
+            onClick={this.handleModal}
+            onClose={this.toggleModal}
+          />
+          {this.state.showModal && (
+            <Modal onClose={this.toggleModal} value={this.state.modal}></Modal>
+          )}
+        </div>
+        {this.state.page < this.state.totalPage && (
+          <Button onClick={this.onBtnClick} />
         )}
-        
       </div>
-      <Button onClick={this.onBtnClick} />
-     </div>
     );
   }
 }

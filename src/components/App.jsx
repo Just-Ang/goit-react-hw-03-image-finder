@@ -10,7 +10,7 @@ export class App extends Component {
 
   componentDidUpdate(prevState) {
     if (this.state.photoName !== prevState.photoName) {
-      console.log('change');
+  
     }
   }
 
