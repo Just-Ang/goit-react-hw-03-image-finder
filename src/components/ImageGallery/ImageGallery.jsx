@@ -84,7 +84,10 @@ export class ImageGallery extends Component {
       );
     }
     if (status === 'rejected') {
-      return <h1>Not found</h1>;
+      return <h1 style={{
+        marginLeft: 'auto',
+        marginRight: 'auto',
+      }}>Not found</h1>;
     }
     return (
       <div>
