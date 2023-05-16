@@ -4,6 +4,7 @@ import css from './ImageGallery.module.css';
 import { Modal } from 'components/Modal/Modal';
 import { Button } from 'components/Button/Button';
 import { Loader } from 'components/Loader/Loader';
+import PropTypes from 'prop-types';
 
 export class ImageGallery extends Component {
   state = {
@@ -84,10 +85,16 @@ export class ImageGallery extends Component {
       );
     }
     if (status === 'rejected') {
-      return <h1 style={{
-        marginLeft: 'auto',
-        marginRight: 'auto',
-      }}>Not found</h1>;
+      return (
+        <h1
+          style={{
+            marginLeft: 'auto',
+            marginRight: 'auto',
+          }}
+        >
+          Not found
+        </h1>
+      );
     }
     return (
       <div>
@@ -108,3 +115,7 @@ export class ImageGallery extends Component {
     );
   }
 }
+
+ImageGallery.propTypes = {
+  photoName: PropTypes.string.isRequired,
+};
